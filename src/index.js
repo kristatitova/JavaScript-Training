@@ -1,70 +1,87 @@
 // prettier-ignore
 const POSITIONS = [
-  [-1,-1],[-1, 0],[-1, 1],
-[ 0,-1],        [ 0, 1],
-[ 1,-1],[ 1, 0],[ 1, 1]];
+  [-1, -1], [-1, 0], [-1, 1],
+  [0, -1], [0, 1],
+  [1, -1], [1, 0], [1, 1]
+];
 
 class GameOfLife {
   constructor(initialGrid, provider) {
-    this.grid = [...initialGrid]; //šis veido kopiju no tā, kas tiek padots
+    this.grid = [...initialGrid];
     this.provider = provider;
     this.size = this.grid.length;
   }
 
   start() {
     this._iterate();
+    setInterval(() => {
+      this._iterate();
+    }, 1000);
   }
 
   _iterate() {
-    const newGrid = [];
-    this.grid.forEach((row, columnIndex) => {
-      const newRow = [];
-      row.forEach((element, rowIndex) => {
-        const neighbours = this._countNeighbours(columnIndex, rowIndex);
-        // neighbours && console.log(neighbours, columnIndex, rowIndex);
+    this.grid = this._generateNewGrid();
+    this.provider.onIteration(this.grid);
+  }
 
-        if (element) {
-          if (neighbours < 2) {
-            newRow.push(false);
-            this.provider.onIsolation(columnIndex, rowIndex);
-          } else if (neighbours === 2 || neighbours === 3) {
-            newRow.push(true);
-            this.provider.onLive(columnIndex, rowIndex);
-          } else if (neighbours > 3) {
-            newRow.push(false);
-            this.provider.onOverpopulation(columnIndex, rowIndex);
-          }
-        } else {
-          if (neighbours === 3) {
-            newRow.push(true);
-            this.provider.onReproduction(columnIndex, rowIndex);
-          } else {
-            newRow.push(element);
-          }
-        }
+  _generateNewGrid() {
+    return this.grid.map((row, rowIndex) => {
+      return row.map((alive, columnIndex) => {
+        const neighbours = this._countNeighbours(rowIndex, columnIndex);
+
+        const { action, value } = this._getActionAndValue(alive, neighbours);
+        action && this.provider[action](rowIndex, columnIndex);
+        return value;
       });
-      newGrid.push(newRow);
     });
-
-    this.provider.onIteration(newGrid);
   }
 
-  _countNeighbours(column, row) {
-    let count = 0;
-
-    POSITIONS.forEach(([x, y]) => {
-      const posY = column + y;
-      const posX = row + x;
-      if (this._outOfBounds(posX, posY)) return;
-      count += Number(this.grid[posY][posX]);
-    });
-    return count;
+  _getActionAndValue(alive, neighbours) {
+    if (alive) {
+      if (this._isIsolation(neighbours)) {
+        return { action: "onIsolation", value: false };
+      } else if (this._isLive(neighbours)) {
+        return { action: "onLive", value: true };
+      } else if (this._isOverPopulation(neighbours)) {
+        return { action: "onOverPopulation", value: false };
+      }
+    } else if (this._isReproduction(neighbours)) {
+      return { action: "onReproduction", value: true };
+    } else {
+      return { value: false };
+    }
   }
+
+  _isIsolation(neighbours) {
+    return neighbours < 2;
+  }
+
+  _isLive(neighbours) {
+    return [2, 3].includes(neighbours);
+  }
+
+  _isOverPopulation(neighbours) {
+    return neighbours > 3;
+  }
+
+  _isReproduction(neighbours) {
+    return neighbours === 3;
+  }
+
+  _countNeighbours(row, column) {
+    return POSITIONS.reduce((sum, [x, y]) => {
+      const posY = row + y;
+      const posX = column + x;
+      if (this._outOfBounds(posX, posY)) return sum;
+      return sum + Number(this.grid[posY][posX]);
+    }, 0);
+  }
+
   _outOfBounds(posX, posY) {
     return posX < 0 || posY < 0 || posX >= this.size || posY >= this.size;
   }
 }
 
 module.exports = {
-  GameOfLife: GameOfLife
+  GameOfLife
 };
