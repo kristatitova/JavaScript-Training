@@ -1,14 +1,63 @@
 form label,
 form input {
-  display: block;
+  display: inline;
 }
 
 table {
   border-collapse: collapse;
+  flex-direction: column;
 }
 th,
-td {
+td,
+tr {
   padding: 8px;
   min-width: 40px;
   text-align: center;
+  flex-direction: column;
+}
+
+.info {
+  display: inline;
+}
+
+.grid {
+  display: inline-flex; /*lai robeža būtu tik gara, cik ir elementu*/
+  flex-direction: column; /*apraksta, kaa saliekas row (viena peec otras. kolonaa*/
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  float: right;
+}
+
+.row {
+  display: flex;
+}
+
+.cell {
+  width: 10px;
+  height: 10px;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.cell.alive {
+  background-color: rgb(69, 148, 69);
+}
+
+.cell.dead {
+  background-color: rgb(200, 15, 16);
+}
+
+.t_row {
+  flex-direction: column;
+}
+
+.t_cell {
+  width: 10px;
+  height: 10px;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  border-top: 1px solid black;
+
+  flex-direction: column;
 }
