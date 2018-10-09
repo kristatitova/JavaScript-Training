@@ -1,4 +1,7 @@
 node_modules
 dist
+<<<<<<< HEAD
 yarn-error.log
 
+=======
+>>>>>>> a4e4bb46d04858ec7fa7505fa660f62d85f0ad95
