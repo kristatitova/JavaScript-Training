@@ -5,7 +5,6 @@ import GameOfLife from "./../../main_app/app/GameOfLife";
 
 import Changelog from "./../Changelog";
 import Grid from "./../Grid";
-import Buttons from "./../Buttons";
 import Form from "./../Form";
 
 export default class Provider extends Component {
@@ -65,7 +64,6 @@ export default class Provider extends Component {
       <>
         <Grid grid={grid} />
         <Changelog counters={counters} />
-        <Buttons pauseGame={this.pauseGame} label={this.state.label} />
         <Form
           restartGame={this.restartGame}
           sizeX={sizeX}
@@ -73,6 +71,8 @@ export default class Provider extends Component {
           speed={speed}
           handleSubmit={this.handleSubmit}
           onChange={this.onChange}
+          pauseGame={this.pauseGame}
+          label={this.state.label}
         />
       </>
     );
